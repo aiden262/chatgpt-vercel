@@ -5,12 +5,15 @@ import GlobalContext from '@contexts/global';
 import { getMaxIndex } from '@utils';
 import { ConversationMode, RecordCardItem } from '@interfaces';
 import './index.css';
+import ImportConversationModal from '@components/ConversationModal/import';
 import RecordCard from './RecordCard';
 
 const Sidebar: FC<{
   data: RecordCardItem[];
 }> = ({ data }) => {
   const [keyword, setKeyword] = useState('');
+  // import modal
+  const [visible, setVisible] = useState(false);
   const { i18n, currentId, setCurrentId, conversations, setConversations } =
     useContext(GlobalContext);
 
@@ -20,7 +23,7 @@ const Sidebar: FC<{
       ...items,
       [id]: {
         id,
-        title: i18n.status_empty,
+        title: '',
         mode,
         messages: [],
         createdAt: Date.now(),
@@ -43,7 +46,7 @@ const Sidebar: FC<{
       label: (
         <div onClick={() => onAdd()}>
           <i className="ri-chat-4-line align-bottom mr-1" />
-          {i18n.chat_mode_text}
+          {i18n.action_add_text}
         </div>
       ),
     },
@@ -52,7 +55,16 @@ const Sidebar: FC<{
       label: (
         <div onClick={() => onAdd('image')}>
           <i className="ri-image-line align-bottom mr-1" />
-          {i18n.chat_mode_image}
+          {i18n.action_add_image}
+        </div>
+      ),
+    },
+    {
+      key: '3',
+      label: (
+        <div onClick={() => setVisible(true)}>
+          <i className="ri-chat-upload-line align-bottom mr-1" />
+          {i18n.action_import}
         </div>
       ),
     },
@@ -108,6 +120,11 @@ const Sidebar: FC<{
             </div>
           ))}
       </div>
+      <ImportConversationModal
+        nextId={getMaxIndex(data).toString()}
+        open={visible}
+        onCancel={() => setVisible(false)}
+      />
     </div>
   );
 };
